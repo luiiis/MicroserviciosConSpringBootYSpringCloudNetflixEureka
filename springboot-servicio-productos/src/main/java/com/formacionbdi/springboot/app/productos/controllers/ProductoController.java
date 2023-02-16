@@ -20,7 +20,7 @@ public class ProductoController {
 	//private Environment env;
 	
 	//@Value("${server.port}")
-	//private Integer port;
+	private Integer port;
 	
 	@Autowired
 	private IProductoService productoService;
@@ -29,7 +29,7 @@ public class ProductoController {
 	public List<Producto> listar(){
 		return productoService.findAll().stream().map(producto ->{
 			//producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
-			//producto.setPort(port);
+			producto.setPort(port);
 			return producto;
 		}).collect(Collectors.toList());
 	}
@@ -38,7 +38,11 @@ public class ProductoController {
 	public Producto detalle(@PathVariable Long id) {
 		Producto producto = productoService.findById(id);
 		//producto.setPort(Integer.parseInt(env.getProperty("local.server.port")));
-		//producto.setPort(port);
+		producto.setPort(port);
+		/*boolean ok =false;
+		if(!ok) {
+			throw new RuntimeException("No se puede cargar el producto");
+		}*/
 		return producto;
 	}
 
