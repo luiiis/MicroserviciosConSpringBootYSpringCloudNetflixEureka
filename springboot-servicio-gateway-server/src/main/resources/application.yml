@@ -20,3 +20,6 @@ spring:
           - Path=/api/items/**
         filters:
           - StripPrefix=2
+          - AddRequestHeader=token-request, 1234567
+          - SetResponseHeader=Content-Type, text/plain
+          - AddRequestParameter=nombre, andrez
