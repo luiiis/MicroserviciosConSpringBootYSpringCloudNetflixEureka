@@ -30,9 +30,9 @@ public class AppConfig {
 							.slidingWindowSize(10)
 							.failureRateThreshold(50)
 							.waitDurationInOpenState(Duration.ofSeconds(10L))
-							.permittedNumberOfCallsInHalfOpenState(5)
 							.build())
-					.timeLimiterConfig(TimeLimiterConfig.ofDefaults())
+					//.timeLimiterConfig(TimeLimiterConfig.ofDefaults())
+					.timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(2L)).build())
 					.build();
 		});
 	}
