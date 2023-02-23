@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.formacionbdi.springboot.app.item.models.service.ItemService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 //import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.formacionbdi.springboot.app.item.models.Item;
@@ -44,6 +45,12 @@ public class ItemController {
 	public Item detalle(@PathVariable Long id,@PathVariable Integer cantidad) {
 		return cbFactory.create("items")
 				.run(()->itemService.findById(id, cantidad),e ->metodoAlternativo(id,cantidad,e));
+	}
+	
+	@CircuitBreaker(name="items",fallbackMethod="metodoAlternativo")
+	@GetMapping("/ver2/{id}/cantidad/{cantidad}")
+	public Item detalle2(@PathVariable Long id,@PathVariable Integer cantidad) {
+		return itemService.findById(id, cantidad);
 	}
 	
 	public Item metodoAlternativo(Long id,Integer cantidad,Throwable e) {
