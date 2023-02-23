@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.formacionbdi.springboot.app.item.models.service.ItemService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 //import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.formacionbdi.springboot.app.item.models.Item;
 import com.formacionbdi.springboot.app.item.models.Producto;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class ItemController {
@@ -53,6 +55,13 @@ public class ItemController {
 		return itemService.findById(id, cantidad);
 	}
 	
+	@CircuitBreaker(name="items",fallbackMethod="metodoAlternativo2")
+	@TimeLimiter(name="items",fallbackMethod="metodoAlternativo2")
+	@GetMapping("/ver3/{id}/cantidad/{cantidad}")
+	public CompletableFuture<Item>  detalle3(@PathVariable Long id,@PathVariable Integer cantidad) {
+		return CompletableFuture.supplyAsync(()->itemService.findById(id, cantidad));
+	}
+	
 	public Item metodoAlternativo(Long id,Integer cantidad,Throwable e) {
 		looger.info(e.getMessage());
 		
@@ -66,4 +75,16 @@ public class ItemController {
 		return item;
 	}
 
+	public CompletableFuture<Item> metodoAlternativo2(Long id,Integer cantidad,Throwable e) {
+		looger.info(e.getMessage());
+		
+		Item item= new Item();
+		Producto producto = new Producto();
+		item.setCantidad(cantidad);
+		producto.setId(id);
+		producto.setNombre("camara sony");
+		producto.setPrecio(500.0);
+		item.setProducto(producto);
+		return CompletableFuture.supplyAsync(()->item);
+	}
 }
